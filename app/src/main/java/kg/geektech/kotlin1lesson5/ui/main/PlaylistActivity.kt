@@ -8,33 +8,32 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import kg.geektech.kotlin1lesson5.`object`.Constants
-import kg.geektech.kotlin1lesson5.base.BaseActivity
-import kg.geektech.kotlin1lesson5.databinding.ActivityMainBinding
-import kg.geektech.kotlin1lesson5.model.Item
+import kg.geektech.kotlin1lesson5.utils.Constants
+import kg.geektech.kotlin1lesson5.core.ui.BaseActivity
+import kg.geektech.kotlin1lesson5.databinding.ActivityPlaylistBinding
+import kg.geektech.kotlin1lesson5.data.model.Item
 import kg.geektech.kotlin1lesson5.ui.detail_playlist.DetailPlaylistActivity
 
-class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), MainAdapter.OnItemClick {
+class PlaylistActivity : BaseActivity<PlaylistViewModel, ActivityPlaylistBinding>(),
+    PlaylistAdapter.OnItemClick {
 
-    override val viewModel: MainViewModel by lazy {
-        ViewModelProvider(this)[MainViewModel::class.java]
+    override val viewModel: PlaylistViewModel by lazy {
+        ViewModelProvider(this)[PlaylistViewModel::class.java]
     }
-
-    private fun getData() {
-        val adapter = MainAdapter()
-        adapter.setOnItemClick(this)
-        binding.rvPlaylists.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        binding.rvPlaylists.adapter = adapter
-        viewModel.playlist(null).observe(this) {
-            if (it != null) {
-                adapter.setList(it.items)
-            }
-        }
+    private val adapter: PlaylistAdapter by lazy {
+        PlaylistAdapter(this)
     }
 
     override fun initView() {
+        initRecyclerView()
         internetConnectionChek()
+    }
+
+    private fun initRecyclerView() {
+        binding.rvPlaylists.apply {
+            layoutManager = LinearLayoutManager(this@PlaylistActivity)
+            adapter = this@PlaylistActivity.adapter
+        }
     }
 
     private fun internetConnectionChek() {
@@ -60,14 +59,21 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), MainAda
         )
     }
 
-    override fun onClick(item: Item) {
-        val intent = Intent(this, DetailPlaylistActivity::class.java)
-        intent.putExtra(Constants.KEY_PLAYLIST_ID, item.id)
-        startActivity(intent)
+    private fun getData() {
+        viewModel.getPlaylists(null).observe(this) {
+            it.items?.let { it1 -> adapter.setList(it1) }
+        }
     }
 
-    override fun inflateViewBinding(inflater: LayoutInflater): ActivityMainBinding {
-        return ActivityMainBinding.inflate(layoutInflater)
+    override fun onClick(item: Item) {
+        Intent(this, DetailPlaylistActivity::class.java).apply {
+            putExtra(Constants.KEY_PLAYLIST_ID, item.id)
+            startActivity(this)
+        }
+    }
+
+    override fun inflateViewBinding(inflater: LayoutInflater): ActivityPlaylistBinding {
+        return ActivityPlaylistBinding.inflate(layoutInflater)
     }
 
     override fun initListener() {

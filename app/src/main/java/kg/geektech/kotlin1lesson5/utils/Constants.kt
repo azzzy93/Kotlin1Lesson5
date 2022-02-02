@@ -1,4 +1,4 @@
-package kg.geektech.kotlin1lesson5.`object`
+package kg.geektech.kotlin1lesson5.utils
 
 object Constants {
     const val PART = "snippet, contentDetails"

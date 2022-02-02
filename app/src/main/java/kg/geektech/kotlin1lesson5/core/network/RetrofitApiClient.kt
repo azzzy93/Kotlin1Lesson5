@@ -1,13 +1,14 @@
-package kg.geektech.kotlin1lesson5.remote
+package kg.geektech.kotlin1lesson5.core.network
 
 import kg.geektech.kotlin1lesson5.BuildConfig.BASE_URL
+import kg.geektech.kotlin1lesson5.data.remote.ApiService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-class RetrofitClient {
+class RetrofitApiClient {
 
     companion object {
         fun create(): ApiService {

@@ -1,6 +1,6 @@
-package kg.geektech.kotlin1lesson5.remote
+package kg.geektech.kotlin1lesson5.data.remote
 
-import kg.geektech.kotlin1lesson5.model.YouTubePlaylists
+import kg.geektech.kotlin1lesson5.data.model.YouTubePlaylists
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

@@ -1,4 +1,4 @@
-package kg.geektech.kotlin1lesson5.base
+package kg.geektech.kotlin1lesson5.core.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater

@@ -1,4 +1,4 @@
-package kg.geektech.kotlin1lesson5.extensions
+package kg.geektech.kotlin1lesson5.core.extensions
 
 import android.widget.ImageView
 import com.bumptech.glide.Glide

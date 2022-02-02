@@ -1,4 +1,4 @@
-package kg.geektech.kotlin1lesson5.extensions
+package kg.geektech.kotlin1lesson5.core.extensions
 
 import android.content.Context
 import android.widget.Toast

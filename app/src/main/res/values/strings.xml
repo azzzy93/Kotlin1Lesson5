@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Kotlin1Lesson5</string>
     <string name="try_again">Try again</string>
+    <string name="playlist">playlist</string>
 </resources>
