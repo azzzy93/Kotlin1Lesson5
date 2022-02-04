@@ -1,12 +1,12 @@
-package kg.geektech.kotlin1lesson5.ui.main
+package kg.geektech.kotlin1lesson5.ui.playlist
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import kg.geektech.kotlin1lesson5.databinding.ListForPlaylistsBinding
 import kg.geektech.kotlin1lesson5.core.extensions.load
 import kg.geektech.kotlin1lesson5.data.model.Item
+import kg.geektech.kotlin1lesson5.databinding.ListForPlaylistsBinding
 
 class PlaylistAdapter(private val onItemClick: OnItemClick?) :
     RecyclerView.Adapter<PlaylistAdapter.MainViewHolder>() {
@@ -32,6 +32,7 @@ class PlaylistAdapter(private val onItemClick: OnItemClick?) :
 
     @SuppressLint("NotifyDataSetChanged")
     fun setList(list: List<Item>) {
+        this.list.clear()
         this.list.addAll(list)
         notifyDataSetChanged()
     }

@@ -1,4 +1,4 @@
-package kg.geektech.kotlin1lesson5.ui.main
+package kg.geektech.kotlin1lesson5.ui.playlist
 
 import android.content.Intent
 import android.net.ConnectivityManager
@@ -8,11 +8,11 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import kg.geektech.kotlin1lesson5.utils.Constants
 import kg.geektech.kotlin1lesson5.core.ui.BaseActivity
-import kg.geektech.kotlin1lesson5.databinding.ActivityPlaylistBinding
 import kg.geektech.kotlin1lesson5.data.model.Item
+import kg.geektech.kotlin1lesson5.databinding.ActivityPlaylistBinding
 import kg.geektech.kotlin1lesson5.ui.detail_playlist.DetailPlaylistActivity
+import kg.geektech.kotlin1lesson5.utils.Constants
 
 class PlaylistActivity : BaseActivity<PlaylistViewModel, ActivityPlaylistBinding>(),
     PlaylistAdapter.OnItemClick {
@@ -68,6 +68,8 @@ class PlaylistActivity : BaseActivity<PlaylistViewModel, ActivityPlaylistBinding
     override fun onClick(item: Item) {
         Intent(this, DetailPlaylistActivity::class.java).apply {
             putExtra(Constants.KEY_PLAYLIST_ID, item.id)
+            putExtra(Constants.KEY_PLAYLIST_TITLE, item.snippet?.title)
+            putExtra(Constants.KEY_PLAYLIST_DESC, item.snippet?.description)
             startActivity(this)
         }
     }

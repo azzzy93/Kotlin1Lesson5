@@ -7,9 +7,12 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="black_text_title">#333333</color>
+    <color name="black_text_desc">#1A1A1A</color>
     <color name="black_text_video_size">#151515</color>
+    <color name="black_text_video_time">#616161</color>
     <color name="bottom_background_image">#CC000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="red_button">#FF0000</color>
     <color name="background_no_internet">#E5E5E5</color>
+    <color name="background_1">#F6F6F6</color>
 </resources>

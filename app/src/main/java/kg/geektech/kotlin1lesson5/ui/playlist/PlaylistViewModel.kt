@@ -1,4 +1,4 @@
-package kg.geektech.kotlin1lesson5.ui.main
+package kg.geektech.kotlin1lesson5.ui.playlist
 
 import androidx.lifecycle.LiveData
 import kg.geektech.kotlin1lesson5.App

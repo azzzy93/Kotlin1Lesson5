@@ -17,7 +17,7 @@
             android:name=".ui.detail_playlist.DetailPlaylistActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.main.PlaylistActivity"
+            android:name=".ui.playlist.PlaylistActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

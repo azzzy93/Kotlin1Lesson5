@@ -29,7 +29,13 @@ data class Snippet(
     val localized: Localized? = null,
     val publishedAt: String? = null,
     val thumbnails: Thumbnails? = null,
-    val title: String? = null
+    val title: String? = null,
+    val resourceId: ResourceId? = null
+)
+
+data class ResourceId(
+    val kind: String? = null,
+    val videoId: String? = null
 )
 
 data class PageInfo(
@@ -75,5 +81,7 @@ data class Default(
 )
 
 data class ContentDetails(
-    val itemCount: Int? = null
+    val itemCount: Int? = null,
+    val videoId: String? = null,
+    val videoPublishedAt: String? = null
 )
