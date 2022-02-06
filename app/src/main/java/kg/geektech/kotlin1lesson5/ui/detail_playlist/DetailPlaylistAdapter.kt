@@ -1,9 +1,9 @@
 package kg.geektech.kotlin1lesson5.ui.detail_playlist
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import kg.geektech.kotlin1lesson5.R
 import kg.geektech.kotlin1lesson5.core.extensions.load
 import kg.geektech.kotlin1lesson5.data.model.Item
 import kg.geektech.kotlin1lesson5.databinding.ListForPlaylistDetailBinding
@@ -32,18 +32,23 @@ class DetailPlaylistAdapter(private val onItemClick: OnItemClick?) :
         return list.size
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     fun setList(list: List<Item>) {
         this.list.clear()
         this.list.addAll(list)
-        notifyDataSetChanged()
+        this.list.forEachIndexed { index, _ ->
+            notifyItemChanged(index)
+        }
     }
 
     inner class MainViewHolder(private val binding: ListForPlaylistDetailBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun onBind(item: Item) {
-            item.snippet?.thumbnails?.high?.url?.let { binding.ivBanner.load(it) }
+            if (item.snippet?.thumbnails?.high?.url != null) {
+                binding.ivBanner.load(item.snippet.thumbnails.high.url)
+            } else {
+                binding.ivBanner.setImageResource(R.drawable.youtube_logo)
+            }
             binding.tvTitle.text = item.snippet?.title
             val videoCount = item.contentDetails?.videoPublishedAt
             binding.tvVideoTime.text = formatDate(videoCount)
@@ -53,13 +58,12 @@ class DetailPlaylistAdapter(private val onItemClick: OnItemClick?) :
             }
         }
 
-        @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
         private fun formatDate(dateString: String?): String? {
             return if (dateString == null) {
                 null
             } else {
                 val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
-                val date: Date? = format.parse(dateString)
+                val date: Date = format.parse(dateString) ?: Calendar.getInstance().time
                 val newFormat = SimpleDateFormat("dd MMMM yyyy HH:mm", Locale.getDefault())
                 newFormat.format(date)
             }

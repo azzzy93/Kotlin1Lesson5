@@ -6,9 +6,13 @@ import android.net.Network
 import android.net.NetworkRequest
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import kg.geektech.kotlin1lesson5.core.extensions.showToast
+import kg.geektech.kotlin1lesson5.core.network.Status
 import kg.geektech.kotlin1lesson5.core.ui.BaseActivity
+import kg.geektech.kotlin1lesson5.data.local.AppPrefs
 import kg.geektech.kotlin1lesson5.data.model.Item
 import kg.geektech.kotlin1lesson5.databinding.ActivityPlaylistBinding
 import kg.geektech.kotlin1lesson5.ui.detail_playlist.DetailPlaylistActivity
@@ -60,8 +64,30 @@ class PlaylistActivity : BaseActivity<PlaylistViewModel, ActivityPlaylistBinding
     }
 
     private fun getData() {
+        AppPrefs(this).isOnBoard = true
+
+        viewModel.loading.observe(this) {
+            binding.progressBar.isVisible = it
+        }
         viewModel.getPlaylists(null).observe(this) {
-            it.items?.let { it1 -> adapter.setList(it1) }
+            when (it.status) {
+                Status.SUCCESS -> {
+
+                    it?.data?.items?.let { it1 -> adapter.setList(it1) }
+                    viewModel.loading.postValue(false)
+
+                    if (it?.data != null) {
+                        AppPrefs(this).youtube = it.data
+                    }
+                }
+                Status.ERROR -> {
+                    showToast(it.message.toString())
+                    viewModel.loading.postValue(false)
+                }
+                Status.LOADING -> {
+                    viewModel.loading.postValue(true)
+                }
+            }
         }
     }
 

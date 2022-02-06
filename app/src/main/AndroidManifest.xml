@@ -5,6 +5,12 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <queries>
+        <intent>
+            <action android:name="com.google.android.youtube.api.service.START" />
+        </intent>
+    </queries>
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -12,7 +18,14 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Kotlin1Lesson5">
+        android:theme="@style/Theme.Kotlin1Lesson5"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".ui.video_play.YoutubeVideoPlayerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.video_play.ExoPlayerActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.detail_playlist.DetailPlaylistActivity"
             android:exported="false" />

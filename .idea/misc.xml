@@ -3,14 +3,23 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Azzzy93/AndroidStudioProjects/Kotlin1Lesson5/app/src/main/res/drawable/back_download.xml" value="0.2315" />
+        <entry key="..\:/Users/Azzzy93/AndroidStudioProjects/Kotlin1Lesson5/app/src/main/res/drawable/circle_for_download.xml" value="0.2315" />
         <entry key="..\:/Users/Azzzy93/AndroidStudioProjects/Kotlin1Lesson5/app/src/main/res/drawable/ic_arrow.xml" value="0.209" />
+        <entry key="..\:/Users/Azzzy93/AndroidStudioProjects/Kotlin1Lesson5/app/src/main/res/drawable/ic_download_24.xml" value="0.2315" />
         <entry key="..\:/Users/Azzzy93/AndroidStudioProjects/Kotlin1Lesson5/app/src/main/res/drawable/ic_no_internet.xml" value="0.209" />
         <entry key="..\:/Users/Azzzy93/AndroidStudioProjects/Kotlin1Lesson5/app/src/main/res/drawable/ic_polygon_1.xml" value="0.209" />
         <entry key="..\:/Users/Azzzy93/AndroidStudioProjects/Kotlin1Lesson5/app/src/main/res/drawable/internet.xml" value="0.209" />
-        <entry key="..\:/Users/Azzzy93/AndroidStudioProjects/Kotlin1Lesson5/app/src/main/res/layout/activity_detail_playlist.xml" value="0.2" />
+        <entry key="..\:/Users/Azzzy93/AndroidStudioProjects/Kotlin1Lesson5/app/src/main/res/layout/activity_detail_playlist.xml" value="0.25" />
         <entry key="..\:/Users/Azzzy93/AndroidStudioProjects/Kotlin1Lesson5/app/src/main/res/layout/activity_detail_playlist2.xml" value="0.1" />
+        <entry key="..\:/Users/Azzzy93/AndroidStudioProjects/Kotlin1Lesson5/app/src/main/res/layout/activity_exo_player.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Azzzy93/AndroidStudioProjects/Kotlin1Lesson5/app/src/main/res/layout/activity_main.xml" value="0.2" />
         <entry key="..\:/Users/Azzzy93/AndroidStudioProjects/Kotlin1Lesson5/app/src/main/res/layout/activity_playlist.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/Azzzy93/AndroidStudioProjects/Kotlin1Lesson5/app/src/main/res/layout/activity_video_play.xml" value="0.2" />
+        <entry key="..\:/Users/Azzzy93/AndroidStudioProjects/Kotlin1Lesson5/app/src/main/res/layout/activity_video_play_youtube.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/Azzzy93/AndroidStudioProjects/Kotlin1Lesson5/app/src/main/res/layout/activity_youtube_player.xml" value="0.17794253938832252" />
+        <entry key="..\:/Users/Azzzy93/AndroidStudioProjects/Kotlin1Lesson5/app/src/main/res/layout/activity_youtube_video_player.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/Azzzy93/AndroidStudioProjects/Kotlin1Lesson5/app/src/main/res/layout/fragment_video_play.xml" value="0.24010416666666667" />
         <entry key="..\:/Users/Azzzy93/AndroidStudioProjects/Kotlin1Lesson5/app/src/main/res/layout/item_no_internet_connection.xml" value="0.2" />
         <entry key="..\:/Users/Azzzy93/AndroidStudioProjects/Kotlin1Lesson5/app/src/main/res/layout/list_for_playlist_detail.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Azzzy93/AndroidStudioProjects/Kotlin1Lesson5/app/src/main/res/layout/list_for_playlists.xml" value="0.25416666666666665" />
