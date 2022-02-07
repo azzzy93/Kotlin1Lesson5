@@ -3,7 +3,7 @@ package kg.geektech.kotlin1lesson5.repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import kg.geektech.kotlin1lesson5.App.Companion.apiService
-import kg.geektech.kotlin1lesson5.BuildConfig
+import kg.geektech.kotlin1lesson5.BuildConfig.API_KEY
 import kg.geektech.kotlin1lesson5.core.network.Resource
 import kg.geektech.kotlin1lesson5.data.model.YouTubePlaylists
 import kg.geektech.kotlin1lesson5.utils.Constants
@@ -19,7 +19,7 @@ class Repository {
             val response = apiService.getPlaylists(
                 Constants.PART,
                 Constants.CHANNEL_ID,
-                BuildConfig.API_KEY,
+                API_KEY,
                 Constants.MAX_RESULTS,
                 pageToken
             )
@@ -42,9 +42,24 @@ class Repository {
             val response = apiService.getDetailPlaylists(
                 Constants.PART,
                 playlistId,
-                BuildConfig.API_KEY,
+                API_KEY,
                 Constants.MAX_RESULTS,
                 pageToken
+            )
+
+            if (response.isSuccessful) {
+                emit(Resource.success(response.body()))
+            } else {
+                emit(Resource.error(response.message(), response.body(), response.code()))
+            }
+        }
+
+    fun getVideos(videosId: String): LiveData<Resource<YouTubePlaylists>> =
+        liveData(Dispatchers.IO) {
+            val response = apiService.getVideos(
+                Constants.PART,
+                videosId,
+                API_KEY
             )
 
             if (response.isSuccessful) {

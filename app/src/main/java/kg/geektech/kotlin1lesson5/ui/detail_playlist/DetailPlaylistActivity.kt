@@ -9,6 +9,7 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import kg.geektech.kotlin1lesson5.R
 import kg.geektech.kotlin1lesson5.core.extensions.showToast
 import kg.geektech.kotlin1lesson5.core.network.Status
 import kg.geektech.kotlin1lesson5.core.ui.BaseActivity
@@ -115,11 +116,14 @@ class DetailPlaylistActivity :
     }
 
     override fun onClick(item: Item) {
-        Intent(this, YoutubeVideoPlayerActivity::class.java).apply {
-            putExtra("VIDEO_ID", item.contentDetails?.videoId)
-            putExtra("VIDEO_TITLE", item.snippet?.title)
-            putExtra("VIDEO_DESC", item.snippet?.description)
-            startActivity(this)
+        val status: String? = item.status?.privacyStatus
+        if (status == "public") {
+            Intent(this, YoutubeVideoPlayerActivity::class.java).apply {
+                putExtra(Constants.VIDEO_ID, item.contentDetails?.videoId)
+                startActivity(this)
+            }
+        } else {
+            showToast(getString(R.string.video_private))
         }
     }
 }

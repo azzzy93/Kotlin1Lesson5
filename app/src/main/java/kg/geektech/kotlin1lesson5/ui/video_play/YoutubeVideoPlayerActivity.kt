@@ -3,44 +3,31 @@ package kg.geektech.kotlin1lesson5.ui.video_play
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
-import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import com.google.android.youtube.player.YouTubeBaseActivity
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubePlayer
+import com.google.android.youtube.player.YouTubePlayerFragment
 import kg.geektech.kotlin1lesson5.BuildConfig.API_KEY
+import kg.geektech.kotlin1lesson5.R
 import kg.geektech.kotlin1lesson5.core.extensions.showToast
+import kg.geektech.kotlin1lesson5.core.network.Status
+import kg.geektech.kotlin1lesson5.core.ui.BaseActivity
 import kg.geektech.kotlin1lesson5.databinding.ActivityYoutubeVideoPlayerBinding
+import kg.geektech.kotlin1lesson5.utils.Constants
 
-class YoutubeVideoPlayerActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListener {
+class YoutubeVideoPlayerActivity :
+    BaseActivity<YoutubeVideoViewModel, ActivityYoutubeVideoPlayerBinding>() {
 
-    private lateinit var binding: ActivityYoutubeVideoPlayerBinding
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityYoutubeVideoPlayerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        initView()
-        initListener()
+    override val viewModel: YoutubeVideoViewModel by lazy {
+        ViewModelProvider(this)[YoutubeVideoViewModel::class.java]
     }
+    private lateinit var playerFragment: YouTubePlayerFragment
+    private var youTubePlayer: YouTubePlayer? = null
 
-    private fun initView() {
+    override fun initView() {
         internetConnectionChek()
-
-        if (intent != null) {
-            binding.tvTitleVideo.text = intent.getStringExtra("VIDEO_TITLE")
-            binding.tvVideoDesc.text = intent.getStringExtra("VIDEO_DESC")
-        }
-    }
-
-    private fun initListener() {
-        binding.tvBack.setOnClickListener {
-            finish()
-        }
-        binding.ivBack.setOnClickListener {
-            finish()
-        }
     }
 
     private fun internetConnectionChek() {
@@ -52,7 +39,7 @@ class YoutubeVideoPlayerActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitia
                     runOnUiThread {
                         binding.includeNoInternet.root.visibility = View.GONE
                         binding.containerForInternetConnection.visibility = View.VISIBLE
-                        initPlayer()
+                        youTubePlayer?.play()
                     }
                 }
 
@@ -60,29 +47,63 @@ class YoutubeVideoPlayerActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitia
                     runOnUiThread {
                         binding.includeNoInternet.root.visibility = View.VISIBLE
                         binding.containerForInternetConnection.visibility = View.GONE
+                        youTubePlayer?.pause()
                     }
                 }
             }
         )
     }
 
-    private fun initPlayer() {
-        binding.player.initialize(API_KEY, this)
+    override fun initViewModel() {
+        intent.getStringExtra(Constants.VIDEO_ID)?.let { it ->
+            viewModel.getVideos(it).observe(this) { resource ->
+                if (resource.status == Status.SUCCESS) {
+                    binding.tvTitleVideo.text = resource.data?.items?.get(0)?.snippet?.title
+                    binding.tvVideoDesc.text =
+                        resource.data?.items?.get(0)?.snippet?.description
+                    initPlayer(resource.data?.items?.get(0)?.id!!)
+                } else if (resource.status == Status.ERROR) {
+                    showToast(getString(R.string.something_went_wrong))
+                }
+            }
+        }
     }
 
-    override fun onInitializationSuccess(
-        p0: YouTubePlayer.Provider?,
-        p1: YouTubePlayer?,
-        p2: Boolean
-    ) {
-        p1?.loadVideo(intent.getStringExtra("VIDEO_ID"))
-        p1?.play()
+    private fun initPlayer(videosId: String) {
+        playerFragment =
+            fragmentManager.findFragmentById(R.id.playerYoutube) as YouTubePlayerFragment
+        playerFragment.initialize(API_KEY, object : YouTubePlayer.OnInitializedListener {
+            override fun onInitializationSuccess(
+                p0: YouTubePlayer.Provider?,
+                p1: YouTubePlayer?,
+                p2: Boolean
+            ) {
+                if (p1 != null) {
+                    p1.loadVideo(videosId)
+                    p1.play()
+                    youTubePlayer = p1
+                }
+            }
+
+            override fun onInitializationFailure(
+                p0: YouTubePlayer.Provider?,
+                p1: YouTubeInitializationResult?
+            ) {
+                showToast(getString(R.string.video_private))
+            }
+        })
     }
 
-    override fun onInitializationFailure(
-        p0: YouTubePlayer.Provider?,
-        p1: YouTubeInitializationResult?
-    ) {
-        showToast("Видео не доступно!")
+    override fun inflateViewBinding(inflater: LayoutInflater): ActivityYoutubeVideoPlayerBinding {
+        return ActivityYoutubeVideoPlayerBinding.inflate(layoutInflater)
+    }
+
+    override fun initListener() {
+        binding.tvBack.setOnClickListener {
+            finish()
+        }
+        binding.ivBack.setOnClickListener {
+            finish()
+        }
     }
 }

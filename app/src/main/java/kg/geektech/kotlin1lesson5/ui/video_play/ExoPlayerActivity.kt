@@ -23,12 +23,13 @@ class ExoPlayerActivity : BaseActivity<BaseViewModel, ActivityExoPlayerBinding>(
         return ActivityExoPlayerBinding.inflate(layoutInflater)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
+    override fun initView() {
         internetConnectionChek()
         initPlayer()
+    }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         if (savedInstanceState != null) {
             val mediaItem = savedInstanceState.getInt("MediaItem")
             val seekTime = savedInstanceState.getLong("SeekTime")

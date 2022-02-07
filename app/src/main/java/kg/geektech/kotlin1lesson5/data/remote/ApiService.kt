@@ -1,7 +1,6 @@
 package kg.geektech.kotlin1lesson5.data.remote
 
 import kg.geektech.kotlin1lesson5.data.model.YouTubePlaylists
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -24,6 +23,13 @@ interface ApiService {
         @Query("key") key: String,
         @Query("maxResults") maxResults: Int,
         @Query("pageToken") pageToken: String?
+    ): Response<YouTubePlaylists>
+
+    @GET("videos")
+    suspend fun getVideos(
+        @Query("part") part: String,
+        @Query("id") videosId: String,
+        @Query("key") key: String
     ): Response<YouTubePlaylists>
 
 }
