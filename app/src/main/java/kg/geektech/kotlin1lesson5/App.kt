@@ -1,19 +1,18 @@
 package kg.geektech.kotlin1lesson5
 
 import android.app.Application
-import kg.geektech.kotlin1lesson5.data.remote.ApiService
-import kg.geektech.kotlin1lesson5.core.network.RetrofitApiClient
-import kg.geektech.kotlin1lesson5.repository.Repository
+import kg.geektech.kotlin1lesson5.di.koinModules
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
 class App : Application() {
 
-    companion object {
-        val repository: Repository by lazy {
-            Repository()
-        }
+    override fun onCreate() {
+        super.onCreate()
 
-        val apiService: ApiService by lazy {
-            RetrofitApiClient.create()
+        startKoin {
+            androidContext(this@App)
+            modules(koinModules)
         }
     }
 }

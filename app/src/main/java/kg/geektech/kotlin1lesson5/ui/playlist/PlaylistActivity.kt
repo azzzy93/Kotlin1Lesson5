@@ -7,23 +7,20 @@ import android.net.NetworkRequest
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import kg.geektech.kotlin1lesson5.core.extensions.showToast
 import kg.geektech.kotlin1lesson5.core.network.Status
 import kg.geektech.kotlin1lesson5.core.ui.BaseActivity
-import kg.geektech.kotlin1lesson5.data.local.AppPrefs
 import kg.geektech.kotlin1lesson5.data.model.Item
 import kg.geektech.kotlin1lesson5.databinding.ActivityPlaylistBinding
 import kg.geektech.kotlin1lesson5.ui.detail_playlist.DetailPlaylistActivity
 import kg.geektech.kotlin1lesson5.utils.Constants
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistActivity : BaseActivity<PlaylistViewModel, ActivityPlaylistBinding>(),
     PlaylistAdapter.OnItemClick {
 
-    override val viewModel: PlaylistViewModel by lazy {
-        ViewModelProvider(this)[PlaylistViewModel::class.java]
-    }
+    override val viewModel: PlaylistViewModel by viewModel()
     private val adapter: PlaylistAdapter by lazy {
         PlaylistAdapter(this)
     }
@@ -31,6 +28,7 @@ class PlaylistActivity : BaseActivity<PlaylistViewModel, ActivityPlaylistBinding
     override fun initView() {
         initRecyclerView()
         internetConnectionChek()
+        viewModel.setPageToken(null)
     }
 
     private fun initRecyclerView() {
@@ -64,21 +62,14 @@ class PlaylistActivity : BaseActivity<PlaylistViewModel, ActivityPlaylistBinding
     }
 
     private fun getData() {
-        AppPrefs(this).isOnBoard = true
-
         viewModel.loading.observe(this) {
             binding.progressBar.isVisible = it
         }
-        viewModel.getPlaylists(null).observe(this) {
+        viewModel.getPlaylists.observe(this) {
             when (it.status) {
                 Status.SUCCESS -> {
-
                     it?.data?.items?.let { it1 -> adapter.setList(it1) }
                     viewModel.loading.postValue(false)
-
-                    if (it?.data != null) {
-                        AppPrefs(this).youtube = it.data
-                    }
                 }
                 Status.ERROR -> {
                     showToast(it.message.toString())

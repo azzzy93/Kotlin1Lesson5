@@ -16,18 +16,18 @@ import kg.geektech.kotlin1lesson5.core.network.Status
 import kg.geektech.kotlin1lesson5.core.ui.BaseActivity
 import kg.geektech.kotlin1lesson5.databinding.ActivityYoutubeVideoPlayerBinding
 import kg.geektech.kotlin1lesson5.utils.Constants
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class YoutubeVideoPlayerActivity :
     BaseActivity<YoutubeVideoViewModel, ActivityYoutubeVideoPlayerBinding>() {
 
-    override val viewModel: YoutubeVideoViewModel by lazy {
-        ViewModelProvider(this)[YoutubeVideoViewModel::class.java]
-    }
+    override val viewModel: YoutubeVideoViewModel by viewModel()
     private lateinit var playerFragment: YouTubePlayerFragment
     private var youTubePlayer: YouTubePlayer? = null
 
     override fun initView() {
         internetConnectionChek()
+        intent.getStringExtra(Constants.VIDEO_ID)?.let { viewModel.setVideoId(it) }
     }
 
     private fun internetConnectionChek() {
@@ -55,16 +55,14 @@ class YoutubeVideoPlayerActivity :
     }
 
     override fun initViewModel() {
-        intent.getStringExtra(Constants.VIDEO_ID)?.let { it ->
-            viewModel.getVideos(it).observe(this) { resource ->
-                if (resource.status == Status.SUCCESS) {
-                    binding.tvTitleVideo.text = resource.data?.items?.get(0)?.snippet?.title
-                    binding.tvVideoDesc.text =
-                        resource.data?.items?.get(0)?.snippet?.description
-                    initPlayer(resource.data?.items?.get(0)?.id!!)
-                } else if (resource.status == Status.ERROR) {
-                    showToast(getString(R.string.something_went_wrong))
-                }
+        viewModel.getVideos.observe(this) { resource ->
+            if (resource.status == Status.SUCCESS) {
+                binding.tvTitleVideo.text = resource.data?.items?.get(0)?.snippet?.title
+                binding.tvVideoDesc.text =
+                    resource.data?.items?.get(0)?.snippet?.description
+                initPlayer(resource.data?.items?.get(0)?.id!!)
+            } else if (resource.status == Status.ERROR) {
+                showToast(getString(R.string.something_went_wrong))
             }
         }
     }

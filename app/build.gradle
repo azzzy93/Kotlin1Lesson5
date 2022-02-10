@@ -70,6 +70,16 @@ dependencies {
     // ExoPlayer
     implementation 'com.google.android.exoplayer:exoplayer:2.16.1'
 
+    // Youtube Extractor
+    implementation 'com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT'
+
     // YoutubePlayer
     implementation files('libs/YouTubeAndroidPlayerApi.jar')
+
+    // KoinDI
+    def koin_version = "2.2.3"
+    implementation "io.insert-koin:koin-android:$koin_version"
+    implementation "io.insert-koin:koin-androidx-scope:$koin_version"
+    implementation "io.insert-koin:koin-androidx-viewmodel:$koin_version"
+    implementation "io.insert-koin:koin-androidx-fragment:$koin_version"
 }

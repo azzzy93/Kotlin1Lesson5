@@ -4,20 +4,38 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
 import android.os.Bundle
+import android.util.Log
+import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.view.isVisible
+import at.huber.youtubeExtractor.VideoMeta
+import at.huber.youtubeExtractor.YouTubeExtractor
+import at.huber.youtubeExtractor.YtFile
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.MergingMediaSource
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
+import kg.geektech.kotlin1lesson5.R
+import kg.geektech.kotlin1lesson5.core.extensions.showToast
+import kg.geektech.kotlin1lesson5.core.network.Status
 import kg.geektech.kotlin1lesson5.core.ui.BaseActivity
-import kg.geektech.kotlin1lesson5.core.ui.BaseViewModel
 import kg.geektech.kotlin1lesson5.databinding.ActivityExoPlayerBinding
+import kg.geektech.kotlin1lesson5.utils.Constants
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class ExoPlayerActivity : BaseActivity<BaseViewModel, ActivityExoPlayerBinding>(), Player.Listener {
+class ExoPlayerActivity : BaseActivity<YoutubeVideoViewModel, ActivityExoPlayerBinding>(),
+    Player.Listener {
 
-    override val viewModel: BaseViewModel = BaseViewModel()
+    override val viewModel: YoutubeVideoViewModel by viewModel()
     private var exoPlayer: ExoPlayer? = null
+    private var playWhenReady = true
+    private var currentMediaItemIndex = 0
+    private var currentPosition: Long = 0
+    private var videoId: String = ""
 
     override fun inflateViewBinding(inflater: LayoutInflater): ActivityExoPlayerBinding {
         return ActivityExoPlayerBinding.inflate(layoutInflater)
@@ -25,28 +43,73 @@ class ExoPlayerActivity : BaseActivity<BaseViewModel, ActivityExoPlayerBinding>(
 
     override fun initView() {
         internetConnectionChek()
-        initPlayer()
+        intent.getStringExtra(Constants.VIDEO_ID)?.let { viewModel.setVideoId(it) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState != null) {
-            val mediaItem = savedInstanceState.getInt("MediaItem")
-            val seekTime = savedInstanceState.getLong("SeekTime")
-            exoPlayer?.seekTo(mediaItem, seekTime)
+            playWhenReady = savedInstanceState.getBoolean("playWhenReady")
+            currentMediaItemIndex = savedInstanceState.getInt("currentMediaItemIndex")
+            currentPosition = savedInstanceState.getLong("currentPosition")
+        }
+    }
+
+    override fun initViewModel() {
+        viewModel.getVideos.observe(this) { resource ->
+            if (resource.status == Status.SUCCESS) {
+                binding.tvTitleVideo.text = resource.data?.items?.get(0)?.snippet?.title
+                binding.tvVideoDesc.text =
+                    resource.data?.items?.get(0)?.snippet?.description
+                videoId = resource.data?.items?.get(0)?.id!!
+                initPlayer()
+            } else if (resource.status == Status.ERROR) {
+                showToast(getString(R.string.something_went_wrong))
+            }
         }
     }
 
     private fun initPlayer() {
         exoPlayer = ExoPlayer.Builder(this).build().also {
             binding.player.player = it
-            it.addListener(this)
-            val mediaItem1 =
-                MediaItem.fromUri("https://storage.googleapis.com/exoplayer-test-media-0/BigBuckBunny_320x180.mp4")
-            it.addMediaItem(mediaItem1)
-            it.prepare()
-            it.play()
+            object : YouTubeExtractor(this) {
+                override fun onExtractionComplete(
+                    ytFiles: SparseArray<YtFile>?,
+                    videoMeta: VideoMeta?
+                ) {
+                    Log.d("Aziz", "onExtractionComplete: null")
+                    if (ytFiles != null) {
+                        Log.d("Aziz", "onExtractionComplete: not null")
+                        val itag = 22
+                        val audioTag = 140
+                        val videoUrl = ytFiles[itag].url
+                        val audioUrl = ytFiles[audioTag].url
+
+                        val audioSource: MediaSource = ProgressiveMediaSource
+                            .Factory(DefaultHttpDataSource.Factory())
+                            .createMediaSource(MediaItem.fromUri(audioUrl))
+                        val videoSource: MediaSource = ProgressiveMediaSource
+                            .Factory(DefaultHttpDataSource.Factory())
+                            .createMediaSource(MediaItem.fromUri(videoUrl))
+
+                        it?.setMediaSource(
+                            MergingMediaSource(
+                                true, videoSource, audioSource
+                            ), true
+                        )
+                        it?.prepare()
+                        it?.seekTo(currentMediaItemIndex, currentPosition)
+                        it?.addListener(this@ExoPlayerActivity)
+                        it?.playWhenReady = playWhenReady
+                    }
+                }
+            }.extract(videoId)
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        exoPlayer?.release()
     }
 
     private fun internetConnectionChek() {
@@ -58,7 +121,6 @@ class ExoPlayerActivity : BaseActivity<BaseViewModel, ActivityExoPlayerBinding>(
                     runOnUiThread {
                         binding.includeNoInternet.root.visibility = View.GONE
                         binding.containerForInternetConnection.visibility = View.VISIBLE
-                        exoPlayer?.play()
                     }
                 }
 
@@ -66,7 +128,6 @@ class ExoPlayerActivity : BaseActivity<BaseViewModel, ActivityExoPlayerBinding>(
                     runOnUiThread {
                         binding.includeNoInternet.root.visibility = View.VISIBLE
                         binding.containerForInternetConnection.visibility = View.GONE
-                        exoPlayer?.pause()
                     }
                 }
             }
@@ -75,13 +136,12 @@ class ExoPlayerActivity : BaseActivity<BaseViewModel, ActivityExoPlayerBinding>(
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        exoPlayer?.let { outState.putLong("SeekTime", it.currentPosition) }
-        exoPlayer?.let { outState.putInt("MediaItem", it.currentMediaItemIndex) }
-    }
+        if (exoPlayer != null) {
+            outState.putBoolean("playWhenReady", exoPlayer!!.playWhenReady)
+            outState.putInt("currentMediaItemIndex", exoPlayer!!.currentMediaItemIndex)
+            outState.putLong("currentPosition", exoPlayer!!.currentPosition)
+        }
 
-    override fun onStop() {
-        super.onStop()
-        exoPlayer?.release()
     }
 
     override fun onPlaybackStateChanged(playbackState: Int) {

@@ -64,9 +64,8 @@
         <com.google.android.exoplayer2.ui.PlayerView
             android:id="@+id/player"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="240dp"
             android:background="@color/black"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar">
 
             <ProgressBar
@@ -77,6 +76,89 @@
                 android:visibility="gone" />
 
         </com.google.android.exoplayer2.ui.PlayerView>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/player">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/margin_16"
+                android:paddingVertical="24dp">
+
+                <TextView
+                    android:id="@+id/tv_title_video"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/fjalla_one"
+                    android:textColor="@color/black_text_title"
+                    android:textSize="20sp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="HOW DISPLACEMENT INSTABILITY &amp; UNCERTAINTY AFFECT CHILDREN" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/container_download"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/back_download"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_title_video">
+
+                    <TextView
+                        android:id="@+id/tv_download"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="9dp"
+                        android:layout_marginStart="@dimen/margin_16"
+                        android:fontFamily="@font/noto_sans"
+                        android:text="@string/download"
+                        android:textColor="@color/red_button"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <FrameLayout
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="@dimen/margin_16"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/circle_for_download"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/tv_download"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageView
+                            android:layout_width="12dp"
+                            android:layout_height="10dp"
+                            android:layout_gravity="center"
+                            android:layout_marginVertical="6dp"
+                            android:src="@drawable/ic_download_24"
+                            tools:ignore="ContentDescription" />
+
+                    </FrameLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:id="@+id/tv_video_desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_16"
+                    android:fontFamily="@font/noto_sans"
+                    android:textColor="@color/black_text_desc"
+                    android:textSize="16sp"
+                    app:layout_constraintTop_toBottomOf="@id/container_download"
+                    tools:text="Refugee children often have suffered many losses and because of that, they are grieving these losses they're grieving the loss of their home, the loss of the life they knew, the places where they were used to be and that they loved to go. The loss of their friends, and certainly the loss of their family members and loved ones. So naturally they're going to have sadness. Refugee children often have suffered many losses and because of that, they are grieving these losses they're grieving the loss of their home, the loss of the life they knew, the places where they were used to be and that they loved to go. The loss of their friends, and certainly the loss of their family members and loved ones. So naturally they're going to have sadness." />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </ScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

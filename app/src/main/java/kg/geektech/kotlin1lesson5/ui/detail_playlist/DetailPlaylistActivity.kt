@@ -7,7 +7,6 @@ import android.net.NetworkRequest
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import kg.geektech.kotlin1lesson5.R
 import kg.geektech.kotlin1lesson5.core.extensions.showToast
@@ -18,14 +17,13 @@ import kg.geektech.kotlin1lesson5.databinding.ActivityDetailPlaylistBinding
 import kg.geektech.kotlin1lesson5.ui.video_play.ExoPlayerActivity
 import kg.geektech.kotlin1lesson5.ui.video_play.YoutubeVideoPlayerActivity
 import kg.geektech.kotlin1lesson5.utils.Constants
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DetailPlaylistActivity :
     BaseActivity<DetailPlaylistViewModel, ActivityDetailPlaylistBinding>(),
     DetailPlaylistAdapter.OnItemClick {
 
-    override val viewModel: DetailPlaylistViewModel by lazy {
-        ViewModelProvider(this)[DetailPlaylistViewModel::class.java]
-    }
+    override val viewModel: DetailPlaylistViewModel by viewModel()
     private val adapter: DetailPlaylistAdapter by lazy {
         DetailPlaylistAdapter(this)
     }
@@ -56,7 +54,7 @@ class DetailPlaylistActivity :
                         binding.tvDescPlaylist.text =
                             intent.getStringExtra(Constants.KEY_PLAYLIST_DESC)
 
-                        intent.getStringExtra(Constants.KEY_PLAYLIST_ID)?.let { getData(it) }
+                        getData()
                     }
                 }
 
@@ -78,24 +76,27 @@ class DetailPlaylistActivity :
         }
     }
 
-    private fun getData(playlistId: String) {
+    private fun getData() {
         viewModel.loading.observe(this) {
             binding.progressBar.isVisible = it
         }
-        viewModel.getDetailPlaylists(playlistId, null).observe(this) {
-            when (it.status) {
-                Status.SUCCESS -> {
-                    it.data?.items?.let { it1 -> adapter.setList(it1) }
-                    val videoCount = it.data?.pageInfo?.totalResults.toString() + " video series"
-                    binding.tvVideoCount.text = videoCount
-                    viewModel.loading.postValue(false)
-                }
-                Status.ERROR -> {
-                    showToast(it.message.toString())
-                    viewModel.loading.postValue(false)
-                }
-                Status.LOADING -> {
-                    viewModel.loading.postValue(true)
+        intent.getStringExtra(Constants.KEY_PLAYLIST_ID)?.let { playlistId ->
+            viewModel.getDetailPlaylists(playlistId, null).observe(this) {
+                when (it.status) {
+                    Status.SUCCESS -> {
+                        it.data?.items?.let { it1 -> adapter.setList(it1) }
+                        val videoCount =
+                            it.data?.pageInfo?.totalResults.toString() + " video series"
+                        binding.tvVideoCount.text = videoCount
+                        viewModel.loading.postValue(false)
+                    }
+                    Status.ERROR -> {
+                        showToast(it.message.toString())
+                        viewModel.loading.postValue(false)
+                    }
+                    Status.LOADING -> {
+                        viewModel.loading.postValue(true)
+                    }
                 }
             }
         }
@@ -108,14 +109,21 @@ class DetailPlaylistActivity :
         binding.ivBack.setOnClickListener {
             finish()
         }
-        binding.fabPlay.setOnClickListener {
-            Intent(this, ExoPlayerActivity::class.java).apply {
-                startActivity(this)
-            }
-        }
     }
 
     override fun onClick(item: Item) {
+        val status: String? = item.status?.privacyStatus
+        if (status == "public") {
+            Intent(this, ExoPlayerActivity::class.java).apply {
+                putExtra(Constants.VIDEO_ID, item.contentDetails?.videoId)
+                startActivity(this)
+            }
+        } else {
+            showToast(getString(R.string.video_private))
+        }
+    }
+
+    override fun onLongClick(item: Item) {
         val status: String? = item.status?.privacyStatus
         if (status == "public") {
             Intent(this, YoutubeVideoPlayerActivity::class.java).apply {

@@ -2,14 +2,14 @@ package kg.geektech.kotlin1lesson5.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
-import kg.geektech.kotlin1lesson5.App.Companion.apiService
 import kg.geektech.kotlin1lesson5.BuildConfig.API_KEY
 import kg.geektech.kotlin1lesson5.core.network.Resource
 import kg.geektech.kotlin1lesson5.data.model.YouTubePlaylists
+import kg.geektech.kotlin1lesson5.data.remote.ApiService
 import kg.geektech.kotlin1lesson5.utils.Constants
 import kotlinx.coroutines.Dispatchers
 
-class Repository {
+class Repository(private val apiService: ApiService) {
 
     fun getPlaylists(pageToken: String?): LiveData<Resource<YouTubePlaylists?>> =
         liveData(Dispatchers.IO) {

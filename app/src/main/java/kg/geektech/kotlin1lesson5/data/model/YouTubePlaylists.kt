@@ -5,6 +5,7 @@ data class YouTubePlaylists(
     val items: List<Item>? = null,
     val kind: String? = null,
     val nextPageToken: String? = null,
+    val prevPageToken: String? = null,
     val pageInfo: PageInfo? = null
 )
 

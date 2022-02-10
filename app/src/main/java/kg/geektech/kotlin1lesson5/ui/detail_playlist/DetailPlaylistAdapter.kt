@@ -56,6 +56,10 @@ class DetailPlaylistAdapter(private val onItemClick: OnItemClick?) :
             itemView.setOnClickListener {
                 onItemClick?.onClick(item)
             }
+            itemView.setOnLongClickListener {
+                onItemClick?.onLongClick(item)
+                return@setOnLongClickListener true
+            }
         }
 
         private fun formatDate(dateString: String?): String? {
@@ -72,5 +76,6 @@ class DetailPlaylistAdapter(private val onItemClick: OnItemClick?) :
 
     interface OnItemClick {
         fun onClick(item: Item)
+        fun onLongClick(item: Item)
     }
 }
