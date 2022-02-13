@@ -1,8 +1,5 @@
 package kg.geektech.kotlin1lesson5.ui.video_play
 
-import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkRequest
 import android.view.LayoutInflater
 import android.view.View
 import com.google.android.youtube.player.YouTubeInitializationResult
@@ -25,32 +22,19 @@ class YoutubeVideoPlayerActivity :
     private var youTubePlayer: YouTubePlayer? = null
 
     override fun initView() {
-        internetConnectionChek()
         intent.getStringExtra(Constants.VIDEO_ID)?.let { viewModel.setVideoId(it) }
     }
 
-    private fun internetConnectionChek() {
-        val cm = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkChangeFilter = NetworkRequest.Builder().build()
-        cm.registerNetworkCallback(networkChangeFilter,
-            object : ConnectivityManager.NetworkCallback() {
-                override fun onAvailable(network: Network) {
-                    runOnUiThread {
-                        binding.includeNoInternet.root.visibility = View.GONE
-                        binding.containerForInternetConnection.visibility = View.VISIBLE
-                        youTubePlayer?.play()
-                    }
-                }
+    override fun haveInternet() {
+        binding.includeNoInternet.root.visibility = View.GONE
+        binding.containerForInternetConnection.visibility = View.VISIBLE
+        youTubePlayer?.play()
+    }
 
-                override fun onLost(network: Network) {
-                    runOnUiThread {
-                        binding.includeNoInternet.root.visibility = View.VISIBLE
-                        binding.containerForInternetConnection.visibility = View.GONE
-                        youTubePlayer?.pause()
-                    }
-                }
-            }
-        )
+    override fun noInternet() {
+        binding.includeNoInternet.root.visibility = View.VISIBLE
+        binding.containerForInternetConnection.visibility = View.GONE
+        youTubePlayer?.pause()
     }
 
     override fun initViewModel() {
@@ -101,6 +85,9 @@ class YoutubeVideoPlayerActivity :
         }
         binding.ivBack.setOnClickListener {
             finish()
+        }
+        binding.includeNoInternet.btnTryAgain.setOnClickListener {
+            checkInternet()
         }
     }
 }

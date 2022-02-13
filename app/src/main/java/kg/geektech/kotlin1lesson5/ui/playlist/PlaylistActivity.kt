@@ -1,9 +1,6 @@
 package kg.geektech.kotlin1lesson5.ui.playlist
 
 import android.content.Intent
-import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkRequest
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.view.isVisible
@@ -27,7 +24,6 @@ class PlaylistActivity : BaseActivity<PlaylistViewModel, ActivityPlaylistBinding
 
     override fun initView() {
         initRecyclerView()
-        internetConnectionChek()
         viewModel.setPageToken(null)
     }
 
@@ -38,27 +34,15 @@ class PlaylistActivity : BaseActivity<PlaylistViewModel, ActivityPlaylistBinding
         }
     }
 
-    private fun internetConnectionChek() {
-        val cm = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkChangeFilter = NetworkRequest.Builder().build()
-        cm.registerNetworkCallback(networkChangeFilter,
-            object : ConnectivityManager.NetworkCallback() {
-                override fun onAvailable(network: Network) {
-                    runOnUiThread {
-                        binding.includeNoInternet.root.visibility = View.GONE
-                        binding.rvPlaylists.visibility = View.VISIBLE
-                        getData()
-                    }
-                }
+    override fun haveInternet() {
+        binding.includeNoInternet.root.visibility = View.GONE
+        binding.rvPlaylists.visibility = View.VISIBLE
+        getData()
+    }
 
-                override fun onLost(network: Network) {
-                    runOnUiThread {
-                        binding.rvPlaylists.visibility = View.GONE
-                        binding.includeNoInternet.root.visibility = View.VISIBLE
-                    }
-                }
-            }
-        )
+    override fun noInternet() {
+        binding.rvPlaylists.visibility = View.GONE
+        binding.includeNoInternet.root.visibility = View.VISIBLE
     }
 
     private fun getData() {
@@ -97,7 +81,7 @@ class PlaylistActivity : BaseActivity<PlaylistViewModel, ActivityPlaylistBinding
 
     override fun initListener() {
         binding.includeNoInternet.btnTryAgain.setOnClickListener {
-            internetConnectionChek()
+            checkInternet()
         }
     }
 }

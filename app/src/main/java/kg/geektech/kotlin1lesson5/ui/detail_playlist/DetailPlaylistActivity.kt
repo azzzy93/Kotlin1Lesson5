@@ -1,9 +1,6 @@
 package kg.geektech.kotlin1lesson5.ui.detail_playlist
 
 import android.content.Intent
-import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkRequest
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.view.isVisible
@@ -34,39 +31,26 @@ class DetailPlaylistActivity :
 
     override fun initView() {
         initRecyclerView()
-        internetConnectionChek()
     }
 
-    private fun internetConnectionChek() {
-        val cm = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkChangeFilter = NetworkRequest.Builder().build()
-        cm.registerNetworkCallback(networkChangeFilter,
-            object : ConnectivityManager.NetworkCallback() {
-                override fun onAvailable(network: Network) {
-                    runOnUiThread {
-                        binding.toolbar.visibility = View.VISIBLE
-                        binding.coordinatorLayout.visibility = View.VISIBLE
-                        binding.includeNoInternet.root.visibility = View.GONE
+    override fun haveInternet() {
+        binding.toolbar.visibility = View.VISIBLE
+        binding.coordinatorLayout.visibility = View.VISIBLE
+        binding.includeNoInternet.root.visibility = View.GONE
 
-                        binding.tvTitlePlaylist.text =
-                            intent.getStringExtra(Constants.KEY_PLAYLIST_TITLE)
+        binding.tvTitlePlaylist.text =
+            intent.getStringExtra(Constants.KEY_PLAYLIST_TITLE)
 
-                        binding.tvDescPlaylist.text =
-                            intent.getStringExtra(Constants.KEY_PLAYLIST_DESC)
+        binding.tvDescPlaylist.text =
+            intent.getStringExtra(Constants.KEY_PLAYLIST_DESC)
 
-                        getData()
-                    }
-                }
+        getData()
+    }
 
-                override fun onLost(network: Network) {
-                    runOnUiThread {
-                        binding.toolbar.visibility = View.GONE
-                        binding.coordinatorLayout.visibility = View.GONE
-                        binding.includeNoInternet.root.visibility = View.VISIBLE
-                    }
-                }
-            }
-        )
+    override fun noInternet() {
+        binding.toolbar.visibility = View.GONE
+        binding.coordinatorLayout.visibility = View.GONE
+        binding.includeNoInternet.root.visibility = View.VISIBLE
     }
 
     private fun initRecyclerView() {
@@ -108,6 +92,9 @@ class DetailPlaylistActivity :
         }
         binding.ivBack.setOnClickListener {
             finish()
+        }
+        binding.includeNoInternet.btnTryAgain.setOnClickListener {
+            checkInternet()
         }
     }
 
