@@ -5,7 +5,6 @@ import android.net.Network
 import android.net.NetworkRequest
 import android.view.LayoutInflater
 import android.view.View
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubePlayer
 import com.google.android.youtube.player.YouTubePlayerFragment

@@ -1,10 +1,10 @@
 package kg.geektech.kotlin1lesson5.ui.video_play
 
+import android.annotation.SuppressLint
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
 import android.os.Bundle
-import android.util.Log
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
@@ -27,6 +27,7 @@ import kg.geektech.kotlin1lesson5.databinding.ActivityExoPlayerBinding
 import kg.geektech.kotlin1lesson5.utils.Constants
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@SuppressLint("StaticFieldLeak")
 class ExoPlayerActivity : BaseActivity<YoutubeVideoViewModel, ActivityExoPlayerBinding>(),
     Player.Listener {
 
@@ -72,39 +73,42 @@ class ExoPlayerActivity : BaseActivity<YoutubeVideoViewModel, ActivityExoPlayerB
     private fun initPlayer() {
         exoPlayer = ExoPlayer.Builder(this).build().also {
             binding.player.player = it
-            object : YouTubeExtractor(this) {
-                override fun onExtractionComplete(
-                    ytFiles: SparseArray<YtFile>?,
-                    videoMeta: VideoMeta?
-                ) {
-                    Log.d("Aziz", "onExtractionComplete: null")
-                    if (ytFiles != null) {
-                        Log.d("Aziz", "onExtractionComplete: not null")
-                        val itag = 22
-                        val audioTag = 140
-                        val videoUrl = ytFiles[itag].url
-                        val audioUrl = ytFiles[audioTag].url
-
-                        val audioSource: MediaSource = ProgressiveMediaSource
-                            .Factory(DefaultHttpDataSource.Factory())
-                            .createMediaSource(MediaItem.fromUri(audioUrl))
-                        val videoSource: MediaSource = ProgressiveMediaSource
-                            .Factory(DefaultHttpDataSource.Factory())
-                            .createMediaSource(MediaItem.fromUri(videoUrl))
-
-                        it?.setMediaSource(
-                            MergingMediaSource(
-                                true, videoSource, audioSource
-                            ), true
-                        )
-                        it?.prepare()
-                        it?.seekTo(currentMediaItemIndex, currentPosition)
-                        it?.addListener(this@ExoPlayerActivity)
-                        it?.playWhenReady = playWhenReady
-                    }
-                }
-            }.extract(videoId)
+            initYouTubeExtractor(it)
         }
+    }
+
+    private fun initYouTubeExtractor(exoPlayer: ExoPlayer) {
+        object : YouTubeExtractor(this) {
+            override fun onExtractionComplete(
+                ytFiles: SparseArray<YtFile>?,
+                videoMeta: VideoMeta?
+            ) {
+                if (ytFiles != null) {
+                    val videoTag = 136
+                    val audioTag = 140
+                    val videoUrl = ytFiles[videoTag].url
+                    val audioUrl = ytFiles[audioTag].url
+
+                    val videoSource: MediaSource = ProgressiveMediaSource
+                        .Factory(DefaultHttpDataSource.Factory())
+                        .createMediaSource(MediaItem.fromUri(videoUrl))
+
+                    val audioSource: MediaSource = ProgressiveMediaSource
+                        .Factory(DefaultHttpDataSource.Factory())
+                        .createMediaSource(MediaItem.fromUri(audioUrl))
+
+                    exoPlayer.setMediaSource(
+                        MergingMediaSource(
+                            true, videoSource, audioSource
+                        ), true
+                    )
+                    exoPlayer.addListener(this@ExoPlayerActivity)
+                    exoPlayer.playWhenReady = playWhenReady
+                    exoPlayer.seekTo(currentMediaItemIndex, currentPosition)
+                    exoPlayer.prepare()
+                }
+            }
+        }.extract(videoId)
     }
 
     override fun onStop() {
@@ -121,6 +125,7 @@ class ExoPlayerActivity : BaseActivity<YoutubeVideoViewModel, ActivityExoPlayerB
                     runOnUiThread {
                         binding.includeNoInternet.root.visibility = View.GONE
                         binding.containerForInternetConnection.visibility = View.VISIBLE
+                        exoPlayer?.play()
                     }
                 }
 
@@ -128,6 +133,7 @@ class ExoPlayerActivity : BaseActivity<YoutubeVideoViewModel, ActivityExoPlayerB
                     runOnUiThread {
                         binding.includeNoInternet.root.visibility = View.VISIBLE
                         binding.containerForInternetConnection.visibility = View.GONE
+                        exoPlayer?.pause()
                     }
                 }
             }
@@ -141,7 +147,6 @@ class ExoPlayerActivity : BaseActivity<YoutubeVideoViewModel, ActivityExoPlayerB
             outState.putInt("currentMediaItemIndex", exoPlayer!!.currentMediaItemIndex)
             outState.putLong("currentPosition", exoPlayer!!.currentPosition)
         }
-
     }
 
     override fun onPlaybackStateChanged(playbackState: Int) {
