@@ -1,17 +1,21 @@
 package kg.geektech.kotlin1lesson5.ui.detail_playlist
 
-import androidx.lifecycle.LiveData
-import kg.geektech.kotlin1lesson5.core.network.Resource
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.switchMap
 import kg.geektech.kotlin1lesson5.core.ui.BaseViewModel
-import kg.geektech.kotlin1lesson5.data.model.YouTubePlaylists
 import kg.geektech.kotlin1lesson5.repository.Repository
 
 class DetailPlaylistViewModel(private val repository: Repository) : BaseViewModel() {
 
-    fun getDetailPlaylists(
-        playlistId: String,
-        pageToken: String?
-    ): LiveData<Resource<YouTubePlaylists?>> {
-        return repository.getDetailPlaylists(playlistId, pageToken)
+    private val _pageToken = MutableLiveData<String?>()
+    private lateinit var playlistId: String
+
+    val getDetailPlaylists = _pageToken.switchMap {
+        repository.getDetailPlaylists(playlistId, it)
+    }
+
+    fun setParams(playlistId: String, pageToken: String?) {
+        this.playlistId = playlistId
+        _pageToken.postValue(pageToken)
     }
 }

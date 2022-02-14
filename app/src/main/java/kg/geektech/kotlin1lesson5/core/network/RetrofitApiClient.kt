@@ -2,6 +2,7 @@ package kg.geektech.kotlin1lesson5.core.network
 
 import kg.geektech.kotlin1lesson5.BuildConfig.BASE_URL
 import kg.geektech.kotlin1lesson5.data.remote.ApiService
+import kg.geektech.kotlin1lesson5.data.remote.RemoteDataSource
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.module
@@ -13,6 +14,7 @@ val networkModules = module {
     single { provideRetrofit(get()) }
     factory { provideOkHttpClient() }
     factory { provideApi(get()) }
+    factory { RemoteDataSource(get()) }
 }
 
 fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {

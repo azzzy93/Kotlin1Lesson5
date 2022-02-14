@@ -31,6 +31,7 @@ class DetailPlaylistActivity :
 
     override fun initView() {
         initRecyclerView()
+        intent.getStringExtra(Constants.KEY_PLAYLIST_ID)?.let { viewModel.setParams(it, null) }
     }
 
     override fun haveInternet() {
@@ -64,23 +65,21 @@ class DetailPlaylistActivity :
         viewModel.loading.observe(this) {
             binding.progressBar.isVisible = it
         }
-        intent.getStringExtra(Constants.KEY_PLAYLIST_ID)?.let { playlistId ->
-            viewModel.getDetailPlaylists(playlistId, null).observe(this) {
-                when (it.status) {
-                    Status.SUCCESS -> {
-                        it.data?.items?.let { it1 -> adapter.setList(it1) }
-                        val videoCount =
-                            it.data?.pageInfo?.totalResults.toString() + " video series"
-                        binding.tvVideoCount.text = videoCount
-                        viewModel.loading.postValue(false)
-                    }
-                    Status.ERROR -> {
-                        showToast(it.message.toString())
-                        viewModel.loading.postValue(false)
-                    }
-                    Status.LOADING -> {
-                        viewModel.loading.postValue(true)
-                    }
+        viewModel.getDetailPlaylists.observe(this) {
+            when (it.status) {
+                Status.SUCCESS -> {
+                    it.data?.items?.let { it1 -> adapter.setList(it1) }
+                    val videoCount =
+                        it.data?.pageInfo?.totalResults.toString() + " video series"
+                    binding.tvVideoCount.text = videoCount
+                    viewModel.loading.postValue(false)
+                }
+                Status.ERROR -> {
+                    showToast(it.message.toString())
+                    viewModel.loading.postValue(false)
+                }
+                Status.LOADING -> {
+                    viewModel.loading.postValue(true)
                 }
             }
         }

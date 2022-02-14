@@ -16,5 +16,4 @@ class PlaylistViewModel(private val repository: Repository) : BaseViewModel() {
     fun setPageToken(pageToken: String?) {
         _pageToken.postValue(pageToken)
     }
-
 }
